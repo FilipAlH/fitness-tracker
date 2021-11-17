@@ -14,17 +14,29 @@ const API = {
     
     const id = location.search.split("=")[1];
 
-    const res = await fetch("/api/workouts/" + id, {
+    if(id === "undefined"){
+
+      const res = await fetch("/api/workouts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+
+      const json = await res.json();
+      return json;
+
+    } else {
+
+      const res = await fetch("/api/workouts/" + id, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data)
-    });
+      });
 
-    const json = await res.json();
+      const json = await res.json();
+      return json;
 
-    
-
-    return json;
+    }
   },
   async createWorkout(data = {}) {
     const res = await fetch("/api/workouts", {

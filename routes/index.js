@@ -2,9 +2,10 @@ const db = require('../models')
 const path = require('path')
 
 module.exports = function(app) {
-    app.get('/exercise', function(req, res) {
+    app.get('/exercise?', function(req, res) {
         res.sendFile(path.join(__dirname, '../public/exercise.html'))
     })
+    
 
     app.get('/stats', function(req, res) {
         res.sendFile(path.join(__dirname, '../public/stats.html'))
@@ -55,9 +56,35 @@ module.exports = function(app) {
     })        
 
     app.post('/api/workouts', function(req, res) {
-        db.Workout.find({}).then(function(data) {
-            res.json(data)
-        })
+        if(!req.body.name || !req.body.duration) {
+            res.json("no")
+        } else {
+            if(req.body.type === 'resistance') {
+
+                db.Workout.create(
+                    {exercises: [{
+                        type: req.body.type,
+                        name: req.body.name,
+                        duration: req.body.duration,
+                        weight: req.body.weight,
+                        sets: req.body.sets,
+                        reps: req.body.reps
+                        }]
+                    },)
+                        .then((data) => res.json(data))
+            } else {
+
+                db.Workout.create(
+                    {exercises: [{
+                        type: req.body.type,
+                        name: req.body.name,
+                        duration : req.body.duration,
+                        distance: req.body.distance
+                        }]
+                    },)
+                        .then((data) => res.json(data))
+            }
+        }
     })
 
     app.get('/api/workouts/range', function(req, res) {
