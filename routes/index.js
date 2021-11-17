@@ -20,54 +20,38 @@ module.exports = function(app) {
         const id = req.params.id
         console.log(id)
         console.log(req.body)
-        if(!id) {
-            console.log('no')
+        if(!id || !req.body.name || !req.body.duration) {
+            res.json("no")
         } else {
             if(req.body.type === 'resistance') {
 
-                db.Workout.findOne(
-                    { _id: id })
-                        .then(data => {
-                            console.log(data)
-                            let exercise = [{
-                            totalDuration : data.exercises[0].totalDuration + req.body.totalDuration,
-                            weight : data.exercises[0].weight + req.body.weight,
-                            sets : data.exercises[0].sets + req.body.sets,
-                            reps : data.exercises[0].reps + req.body.reps
-                            }]
-                            console.log(exercise)
+                let exercise = {
+                    type: req.body.type,
+                    name: req.body.name,
+                    duration: req.body.duration,
+                    weight: req.body.weight,
+                    sets: req.body.sets,
+                    reps: req.body.reps
+                }
 
-                            db.Workout.updateOne({ "_id": data._id }, { "$set": {
-                                'exercises.$[].totalDuration' : exercise[0].totalDuration, 
-                                'exercises.$[].weight' : exercise[0].weight,
-                                'exercises.$[].sets' : exercise[0].sets,
-                                'exercises.$[].reps' : exercise[0].reps,
-                            }}, { "new": true })
-                                .then((data) => res.json(data))
-                        })
+                db.Workout.updateOne(
+                    { _id: id },
+                    { $push: {exercises: exercise}})
+                        .then((data) => res.json(data))
             } else {
-                db.Workout.findOne(
-                    { _id: id })
-                    .then(data => {
-                        console.log(data)
-                        let exercise = [{
-                        totalDuration : data.exercises[0].totalDuration + req.body.totalDuration,
-                        distance: data.exercises[0].distance + req.body.distance
-                        }]
-                        console.log(exercise)
 
-                        db.Workout.updateOne({ "_id": data._id }, 
-                            { "$set": { 
-                            'exercises.$[].duration' : exercise[0].totalDuration, 
-                            'exercises.$[].distance' : exercise[0].distance,
-                            }}, 
-                            { "new": true })
-                            .then((data) => res.json(data))
-                    })
+                let exercise = {
+                    type: req.body.type,
+                    name: req.body.name,
+                    duration : req.body.duration,
+                    distance: req.body.distance
+                }
+                db.Workout.updateOne(
+                    { _id: id },
+                    { $push: {exercises: exercise}})
+                        .then((data) => res.json(data))
             }
         }
-        
-        
     })        
 
     app.post('/api/workouts', function(req, res) {
