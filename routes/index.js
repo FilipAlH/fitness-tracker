@@ -30,7 +30,7 @@ module.exports = function(app) {
                         .then(data => {
                             console.log(data)
                             let exercise = [{
-                            duration : data.exercises[0].duration + req.body.duration,
+                            totalDuration : data.exercises[0].totalDuration + req.body.totalDuration,
                             weight : data.exercises[0].weight + req.body.weight,
                             sets : data.exercises[0].sets + req.body.sets,
                             reps : data.exercises[0].reps + req.body.reps
@@ -38,12 +38,12 @@ module.exports = function(app) {
                             console.log(exercise)
 
                             db.Workout.updateOne({ "_id": data._id }, { "$set": {
-                                'exercises.$[].duration' : exercise[0].duration, 
+                                'exercises.$[].totalDuration' : exercise[0].totalDuration, 
                                 'exercises.$[].weight' : exercise[0].weight,
                                 'exercises.$[].sets' : exercise[0].sets,
                                 'exercises.$[].reps' : exercise[0].reps,
                             }}, { "new": true })
-                                .then((data) => console.log(data))
+                                .then((data) => res.json(data))
                         })
             } else {
                 db.Workout.findOne(
@@ -51,18 +51,18 @@ module.exports = function(app) {
                     .then(data => {
                         console.log(data)
                         let exercise = [{
-                        duration : data.exercises[0].duration + req.body.duration,
+                        totalDuration : data.exercises[0].totalDuration + req.body.totalDuration,
                         distance: data.exercises[0].distance + req.body.distance
                         }]
                         console.log(exercise)
 
                         db.Workout.updateOne({ "_id": data._id }, 
                             { "$set": { 
-                            'exercises.$[].duration' : exercise[0].duration, 
+                            'exercises.$[].duration' : exercise[0].totalDuration, 
                             'exercises.$[].distance' : exercise[0].distance,
                             }}, 
                             { "new": true })
-                            .then((data) => console.log(data))
+                            .then((data) => res.json(data))
                     })
             }
         }
