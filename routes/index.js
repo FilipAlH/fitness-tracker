@@ -2,7 +2,7 @@ const db = require('../models')
 const path = require('path')
 
 module.exports = function(app) {
-    app.get('/exercise?', function(req, res) {
+    app.get('/exercise', function(req, res) {
         res.sendFile(path.join(__dirname, '../public/exercise.html'))
     })
     
@@ -12,9 +12,13 @@ module.exports = function(app) {
     })
 
     app.get('/api/workouts', function(req, res) {
-        db.Workout.find({}).then(function(data) {
+        try{
+            db.Workout.find({}).then(function(data) {
             res.json(data)
-        })
+            })
+        } catch(error) {
+            res.json(error)
+        }
     })
 
     app.put('/api/workouts/:id', function(req, res) {
